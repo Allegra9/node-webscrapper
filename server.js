@@ -1,83 +1,79 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const axios = require('axios');
+// require('make-runnable');
 
 // hackernews --posts n
 // --posts how many posts to print. A positive integer <= 100.
 //  hackernews( {posts: n} )  //func that takes in an arg obj
-//  https://news.ycombinator.com/news?p=2   // each page has 30 articles
+
+
+// module.exports = {
+//     addTogether: function(x,y){
+//         return x + y
+//     }, doSomethingWithObject: function(object){
+//         object.newKey = "easy AF";
+//         return object;
+//     }, simpleValue: 'also works'
+// };
+// require('make-runnable');
+
+//module.exports = {
+    // hackernews: async function(obj){
+    //   return getData(obj)
+    // }
+// };
+// require('make-runnable');
 
 const hackernews = async ({posts: postsRequested}) => {
-
-  getData()     //async func will return Promise unitl it's resolved
-
-  async function getData() {
-    try {
-      const res1 = await axios.get('https://news.ycombinator.com/news?p=1')
-      const res2 = await axios.get('https://news.ycombinator.com/news?p=2')
-      const res3 = await axios.get('https://news.ycombinator.com/news?p=3')
-      const res4 = await axios.get('https://news.ycombinator.com/news?p=4')
-      let arr = [res1.data, res2.data, res3.data, res4.data]  // 4
-      for (i = 0; i < arr.length; i++){
-        getFromhtml(arr[i])
-      }
-      //getFromhtml(arr[0])
-    } catch (error) {
-      console.error(error);
+  try {
+    const res1 = await axios.get('https://news.ycombinator.com/news?p=1')
+    const res2 = await axios.get('https://news.ycombinator.com/news?p=2')
+    const res3 = await axios.get('https://news.ycombinator.com/news?p=3')
+    const res4 = await axios.get('https://news.ycombinator.com/news?p=4')
+    let htmls = [res1.data, res2.data, res3.data, res4.data]  // 4
+    for (let i = 0; i < htmls.length; i++){
+      getPosts(htmls[i], postsRequested)
     }
-  }
-
-  const getFromhtml = (html) => {
-    let results = []
-
-    let $ = cheerio.load(html)
-    $('span.comhead').each(function(i, element){
-      let a = $(this).prev()
-
-      let title = a.text()
-      let uri = a.attr('href')
-      let rank = a.parent().parent().text()
-
-      // if (parseInt(rank) < postsRequested) {
-      //   console.log(rank)
-      // }
-      //console.log(rank)
-
-      let subtext = a.parent().parent().next().children('.subtext').children()
-
-      let author = $(subtext).eq(1).text()
-      let points = $(subtext).eq(0).text()
-      let comments = $(subtext).eq(5).text()
-
-      let obj = {
-        title: title,
-        uri: uri,
-        author: author,
-        points: parseInt(points),
-        comments: parseInt(comments),
-        rank: parseInt(rank)
-      }
-      //results.push(obj)
-      if (obj.rank <= postsRequested) {
-        //console.log(obj)
-        results.push(obj)
-      }
-    })
-    if (results.length > 0){
-      console.log(results.length)
-    }
-    // if (obj.rank < postsRequested) {
-    //   console.log(obj)
-    // }
-    //console.log(results.length)
-    // if (results.rank < postsRequested) {
-    //   console.log(results.rank)
-    // }
+  } catch (error) {
+    console.error(error);
   }
 }
 
-//getPosts(3, 5)
-hackernews({posts: 35})  // will be called from terminal
+const getPosts = (html, posts) => {
+  let results = []
+  let $ = cheerio.load(html)
+
+  $('span.comhead').each(function(){
+    let a = $(this).prev()
+
+    let title = a.text()
+    let uri = a.attr('href')
+    let rank = a.parent().parent().text()
+
+    let subtext = a.parent().parent().next().children('.subtext').children()
+    let author = $(subtext).eq(1).text()
+    let points = $(subtext).eq(0).text()
+    let comments = $(subtext).eq(5).text()
+
+    let obj = {
+      title: title,
+      uri: uri,
+      author: author,
+      points: parseInt(points),
+      comments: parseInt(comments),
+      rank: parseInt(rank)
+    }
+    if (obj.rank <= posts) {
+      results.push(obj)
+    }
+  })
+  if (results.length > 0){
+    console.log(results)
+  }
+}
+
+hackernews({posts: 2})  // will be called from terminal
 
 //VALIDATIONS:
 
