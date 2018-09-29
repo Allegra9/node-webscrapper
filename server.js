@@ -18,27 +18,40 @@ const axios = require('axios');
 // };
 // require('make-runnable');
 
-//module.exports = {
-    // hackernews: async function(obj){
-    //   return getData(obj)
-    // }
-// };
-// require('make-runnable');
 
-const hackernews = async ({posts: postsRequested}) => {
-  try {
-    const res1 = await axios.get('https://news.ycombinator.com/news?p=1')
-    const res2 = await axios.get('https://news.ycombinator.com/news?p=2')
-    const res3 = await axios.get('https://news.ycombinator.com/news?p=3')
-    const res4 = await axios.get('https://news.ycombinator.com/news?p=4')
-    let htmls = [res1.data, res2.data, res3.data, res4.data]  // 4
-    for (let i = 0; i < htmls.length; i++){
-      getPosts(htmls[i], postsRequested)
+module.exports = {
+    hackernews: async function(obj){
+      try {
+        const res1 = await axios.get('https://news.ycombinator.com/news?p=1')
+        const res2 = await axios.get('https://news.ycombinator.com/news?p=2')
+        const res3 = await axios.get('https://news.ycombinator.com/news?p=3')
+        const res4 = await axios.get('https://news.ycombinator.com/news?p=4')
+        let htmls = [res1.data, res2.data, res3.data, res4.data]  // 4
+        for (let i = 0; i < htmls.length; i++){
+          getPosts(htmls[i], obj.posts)
+          //return getPosts(htmls[i], obj.posts)  // only first 30
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-  } catch (error) {
-    console.error(error);
-  }
-}
+};
+require('make-runnable');
+
+// const hackernews = async ({posts: postsRequested}) => {
+//   try {
+//     const res1 = await axios.get('https://news.ycombinator.com/news?p=1')
+//     const res2 = await axios.get('https://news.ycombinator.com/news?p=2')
+//     const res3 = await axios.get('https://news.ycombinator.com/news?p=3')
+//     const res4 = await axios.get('https://news.ycombinator.com/news?p=4')
+//     let htmls = [res1.data, res2.data, res3.data, res4.data]  // 4
+//     for (let i = 0; i < htmls.length; i++){
+//       return getPosts(htmls[i], postsRequested)
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
 const getPosts = (html, posts) => {
   let results = []
@@ -70,10 +83,11 @@ const getPosts = (html, posts) => {
   })
   if (results.length > 0){
     console.log(results)
+    //return results
   }
 }
 
-hackernews({posts: 2})  // will be called from terminal
+//hackernews({posts: 2})  // will be called from terminal
 
 //VALIDATIONS:
 
