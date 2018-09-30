@@ -1,52 +1,33 @@
-const request = require('request');
-const cheerio = require('cheerio');
-const axios = require('axios');
+#!/usr/bin/env node
 
-// hackernews --posts n
-// --posts how many posts to print. A positive integer <= 100.
-//  hackernews({ posts: n })
+const fetch = require('node-fetch')
+const cheerio = require('cheerio')
+const program = require('commander')
 
-//  node server hackernews --posts 5
+const getPagesArray = (numberOfPosts) =>
+  Array(Math.ceil(numberOfPosts / 30))   //divides by 30 (posts per page)
+    .fill()                          //creates a new array
+    .map((_, index) => index + 1)    // maps thru the arr and adds one to each value
+                                     //[1, 2, 3, 4,..] aka pages numbers, no 0
 
-// module.exports = {
-//     addTogether: function(x,y){
-//         return x + y
-//     }, doSomethingWithObject: function(object){
-//         object.newKey = "easy AF";
-//         return object;
-//     }, simpleValue: 'also works'
-// };
-// require('make-runnable');
+const getPageHTML = (pageNumber) =>
+  fetch(`https://news.ycombinator.com/news?p=${pageNumber}`)
+    .then(resp => resp.text())   //Promise
 
-
-// module.exports = {
-//     hackernews: async function(obj){
-//       //LALALALa
-//     }
-// };
-// require('make-runnable');
-
-const hackernews = async ({posts: postsRequested}) => {
-  try {
-    let htmls = await Promise.all([
-      axios.get('https://news.ycombinator.com/news?p=1'),
-      axios.get('https://news.ycombinator.com/news?p=2'),
-      axios.get('https://news.ycombinator.com/news?p=3'),
-      axios.get('https://news.ycombinator.com/news?p=4')
-    ])
-    for (let i = 0; i < htmls.length; i++){
-      getPosts(htmls[i].data, postsRequested)
-    }
-  } catch (error) {
-    console.error(error);
+const getAllHTML = async (numberOfPosts) => {
+  if (numberOfPosts < 1 || numberOfPosts > 100) {
+    return 'Please choose a number between 1 and 100'
   }
+  return Promise.all(getPagesArray(numberOfPosts).map(getPageHTML))
+    //maps getPageHTML func on each element of PagesArray [1, 2, 3, 4,...]
+    .then(htmls => htmls.join(''))   // one joined html for all pages
 }
 
 const getPosts = (html, posts) => {
   let results = []
   let $ = cheerio.load(html)
 
-  $('span.comhead').each(function(){
+  $('span.comhead').each(function() {
     let a = $(this).prev()
 
     let title = a.text()
@@ -59,24 +40,32 @@ const getPosts = (html, posts) => {
     let comments = $(subtext).eq(5).text()
 
     let obj = {
-      title: checkInput(title),
-      uri: checkURI(uri),
-      author: checkInput(author),
-      points: checkPoints(points),
-      comments: checkComments(comments),
-      rank: parseInt(rank)
+       title: checkInput(title),
+       uri: checkURI(uri),
+       author: checkInput(author),
+       points: checkPoints(points),
+       comments: checkComments(comments),
+       rank: parseInt(rank)
     }
     if (obj.rank <= posts) {
       results.push(obj)
     }
   })
-  if (results.length > 0){
+  if (results.length > 0) {
     console.log(results)
-    //return results
+    return results
   }
 }
 
-hackernews({posts: 32})  // will be called from terminal
+// hackernews --posts n     // hackernews -p 2
+program
+  .option('-p, --posts [value]', 'Number of posts', 30)
+  .action(args =>
+    getAllHTML(args.posts)
+      .then(html => getPosts(html, args.posts))
+  )
+
+program.parse(process.argv)
 
 //VALIDATIONS:
 
@@ -107,7 +96,7 @@ const checkPoints = (points) => {
 }
 
 const checkComments = (comments) => {
-  if (comments === 'discuss' || parseInt(comments) <= 0) {
+  if (comments === 'discuss' || comments === '' || parseInt(comments) <= 0) {
     return 0
   }else {
     return parseInt(comments)
