@@ -14,4 +14,4 @@ This CLI app is global, i.e., you can run `hackernews` cmd in Desktop or any oth
 ## Libraries used:
 `cheerio` for HTML elements selection,
 `node-fetch` for fetch API,
-`commander` for allowing to modify commands, `node server -p 5` can now be called as `hackernews -p 5`, and making `hackernews --help` available.
+`commander` for running the program from a cmd line, and modified commands, such as: `node server -p 5` can now be called as `hackernews -p 5`, and making `hackernews --help` available.
