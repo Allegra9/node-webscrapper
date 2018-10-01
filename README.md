@@ -9,7 +9,10 @@ Note: If you don't already have NPM installed, you can get it here: https://node
 
 ## How to run
 Once you've installed the app, simply type:
-- `hackernews --posts [number of posts]` or `hackernews -p [number of posts]`
+```
+hackernews --posts [number of posts]
+``` 
+or `hackernews -p [number of posts]`
 to log the desired number of posts in the console. Default is 30 if you run just `hackernews`.
 This CLI app is global, i.e., you can run `hackernews` cmd in Desktop or any other directory.
 
