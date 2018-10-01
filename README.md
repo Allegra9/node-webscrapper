@@ -1,4 +1,4 @@
-# node-webscrapper
+# hackernews CLI
 
 ## How to install
 cd into the project's directory and run:
