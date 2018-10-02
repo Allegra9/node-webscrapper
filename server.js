@@ -7,12 +7,11 @@ const program = require('commander')
 const getPagesArray = (numberOfPosts) =>
   Array(Math.ceil(numberOfPosts / 30))   //divides by 30 (posts per page)
     .fill()                          //creates a new array
-    .map((_, index) => index + 1)    // maps thru the arr and adds one to each value
-                                     //[1, 2, 3, 4,..] aka pages numbers, no 0
+    .map((_, index) => index + 1)    //fills it with values [1, 2, 3,..]
 
 const getPageHTML = (pageNumber) =>
   fetch(`https://news.ycombinator.com/news?p=${pageNumber}`)
-    .then(resp => resp.text())   //Promise
+    .then(resp => resp.text())
 
 const getAllHTML = async (numberOfPosts) => {
   if (numberOfPosts < 1 || numberOfPosts > 100) {
@@ -73,8 +72,7 @@ const checkInput = (input) => {
   if (input.length > 0 && input.length < 256){
     return input
   }else {
-    return 'no input or its more than 256 chars'
-    //input = input.substring(0,253)+"...";
+    return input.substring(0,253)+"...";
   }
 }
 
