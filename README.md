@@ -20,3 +20,7 @@ This CLI app is global, i.e., you can run `hackernews` cmd in Desktop or any oth
 - `cheerio` for HTML elements selection,
 - `node-fetch` for fetch API,
 - `commander` for running the program from a cmd line, and allowing custom command flags such as: `hackernews -p 5`, and `hackernews --help`.
+
+## Blog post on Medium
+Web scrape Hacker News with Node.js
+https://medium.com/@allegra9/web-scrape-hacker-news-with-node-js-e2973c1c9d16
